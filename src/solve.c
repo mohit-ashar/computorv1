@@ -6,12 +6,11 @@
 /*   By: mashar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/24 19:26:17 by mashar            #+#    #+#             */
-/*   Updated: 2020/09/24 23:56:23 by mashar           ###   ########.fr       */
+/*   Updated: 2020/10/01 19:42:42 by mashar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "computor.h"
 
 double		ft_sqrt(double number)
 {
@@ -34,7 +33,6 @@ void		solve_two_degree(double *numbers, double **solution)
 
 	discriminant = (numbers[1] * numbers[1]) - 4 * numbers[0] * \
 						numbers[2];
-	printf("Disc is %lf\n", discriminant);
 	if (discriminant == 0)
 	{
 		solution[0][0] = 1;
@@ -56,47 +54,57 @@ void		solve_two_degree(double *numbers, double **solution)
 			ft_sqrt(discriminant)) / (2 * numbers[2]);
 }
 
+void		ft_free(double *numbers)
+{
+	printf("Malloc error!!!");
+	free(numbers);
+	exit(0);
+}
+
+void		check_exception(double *numbers, int degree)
+{
+	int non_zero;
+	int	i;
+
+	i = 0;
+	non_zero = 0;
+	while (i <= degree)
+		if (numbers[i++] != 0)
+			non_zero++;
+	if (non_zero == 0)
+	{
+		printf("Each real number is a solution!\n");
+		free(numbers);
+		exit(1);
+	}
+	else if (degree == 0)
+	{
+		printf("Impossible equation. There is no solution!\n");
+		free(numbers);
+		exit(1);
+	}
+}
+
 double		*solve(double *numbers, int degree)
 {
 	double	*solution;
 
+	check_exception(numbers, degree);
 	if (degree == 1)
 	{
 		solution = (double*)malloc(sizeof(double) * 2);
 		if (!solution)
-			return (NULL);
+			ft_free(numbers);
 		solution[0] = 1;
-		solution[1] = numbers[0] / numbers[1];
+		solution[1] = -numbers[0] / numbers[1];
 		return (solution);
 	}
 	else
 	{
 		solution = (double*)malloc(sizeof(double) * 3);
 		if (!solution)
-			return (NULL);
+			ft_free(numbers);
 		solve_two_degree(numbers, &solution);
 		return (solution);
-	}
-}
-
-int			main()
-{
-	double numbers[5] = {3, 22, 20, 0, 0};
-	double *solution;
-	int degree = 2;
-	solution = solve(numbers, degree);
-	if(degree == 1)
-		printf("Solution is %lf\n", solution[1]);
-	else
-	{
-		if (solution[0] == 1)
-			printf("Solution is %lf\n", solution[1]);
-		else if (solution[0] == 2)
-		{
-			printf("Solution 1 is %lf\n", solution[1]);
-			printf("Solution 2 is %lf\n", solution[2]);
-		}
-		else
-			printf("The solution is a complex number: %lf + %lfi\n", solution[1], solution[2]);
 	}
 }
