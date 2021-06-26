@@ -1,1 +1,1 @@
-42 ComputorV1.
+42 ComputorV1
